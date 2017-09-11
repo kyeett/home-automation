@@ -8,17 +8,8 @@ pipeline {
     }
     stage('Test') {
       steps {
-        parallel(
-          "Test": {
-            sleep 1
-            input 'Accept, dude!'
-            
-          },
-          "Test 2": {
-            mail(subject: 'Commit pushed', body: 'Commit pushed. Already told you that.', from: 'jenkins@jenkins.com', to: 'magnus.wahlstrand@gmail.com')
-            
-          }
-        )
+        sleep 1
+        input 'Accept, dude!'
       }
     }
     stage('Stuff completed') {
