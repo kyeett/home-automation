@@ -1,0 +1,1 @@
+Secret things, like API-keys and passwords are stored here. Ignored in .gitignore.
