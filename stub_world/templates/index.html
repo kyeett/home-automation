@@ -18,18 +18,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
   <script>
       mermaidAPI.initialize({
           startOnLoad:false,
-          logLevel: 1
       });
-
-      sequence = [
-      '  Earth Station ->> Mars Station: Hello Space! |url:http://www.google.se\n',
-      '  Mars Station ->> Earth Station: Hello Earth! |url:http://stackoverflow.com\n',
-      '  Starship Voyager ->> Earth Station: We are at the final fronter\n',
-      '  Mars Station ->> Starship Voyager: Where are you guys?\n',
-      '  Starship Voyager ->> Earth Station: We are done, stop logging\n',
-      '  A ->> B: We are done, stop logging\n',
-      '  Mars Station ->> Starship Voyager: No really... Stop coyping us\n',
-      ]
 
       function addLinks() {
 
@@ -50,25 +39,30 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
         });
       }
 
-      function updateGraph(i) {
+      function updateGraph() {
             
-            var element = document.querySelector("#graphDiv");
+            $.get('/log', function(data) {
 
-            var insertSvg = function(svgCode, bindFunctions){
-                element.innerHTML = svgCode;
-            };
+              console.log(data);
 
-            graphDefinition = "sequenceDiagram\n" + sequence.slice(0,i).join("");
+              var element = document.querySelector("#graphDiv");
 
-            var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+              var insertSvg = function(svgCode, bindFunctions){
+                  element.innerHTML = svgCode;
+              };
 
-            // Add hyperlinks to text
-            addLinks();
+              graphDefinition = data;
+
+              var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+
+              // Add hyperlinks to text
+              //addLinks();
 
 
-            setTimeout(function() {
-                updateGraph(i+1)
-            }, 1000);
+              setTimeout(function() {
+                  updateGraph()
+              }, 1000);
+            })
         
       }
 
