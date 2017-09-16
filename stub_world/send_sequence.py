@@ -6,6 +6,7 @@
 import zmq
 import time
 import random
+import json
 
 ctx = zmq.Context()
 
@@ -18,15 +19,8 @@ class Stub:
       self.socket.connect("tcp://localhost:5556")
 
    def log_signaling(self, source, target, payload=None):
-
-      if payload:
-         log_entry = '%s ->> %s: %s' % (
-             source, target, payload)
-      else:
-         log_entry = '%s ->> %s' % (source, target)
-
-      print(source, target, payload)
-      self.socket.send_string(log_entry)
+      log_entry = (source, target, payload)
+      self.socket.send_string(json.dumps(log_entry))
 
 
 class SpaceShip(Stub):

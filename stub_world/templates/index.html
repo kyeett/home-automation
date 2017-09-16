@@ -6,10 +6,8 @@
 https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 </head>
 <body>
-  <div class="graphDiv">
-
-
-  </div>
+  <div class="graphDiv" style="float: left"></div>
+  <div id="dataDiv" style="width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -37,6 +35,9 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
           }
 
         });
+
+
+
       }
 
       function updateGraph() {
@@ -56,8 +57,19 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
               var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
 
               // Add hyperlinks to text
-              //addLinks();
+              addLinks();
 
+
+              // Ensure on click // TODO: is this really working?
+              $( "a" ).on( "click", function( event ) {
+                
+                console.log($(this).text());
+                console.log($(this).prop('href'));
+                $('#dataDiv').text($(this).prop('href').baseVal);
+
+                event.preventDefault();
+                return false;
+              });
 
               setTimeout(function() {
                   updateGraph()
@@ -66,7 +78,12 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
         
       }
 
-      updateGraph(1);
+      $(document).ready(function() {
+
+          updateGraph();
+
+        
+      })
 
   </script>
 

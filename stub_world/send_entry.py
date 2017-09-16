@@ -30,7 +30,7 @@ except IndexError as e:
 try:
    msg = sys.argv[3]
 except IndexError as e:
-   msg = 'data'
+   msg = {'key':'value'}
 
 
 a_stub = EmptyStub(name=a)

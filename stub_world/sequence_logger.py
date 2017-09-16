@@ -1,6 +1,7 @@
 
 import sys
 import zmq
+import json
 
 class SequenceLogger:
    
@@ -10,16 +11,28 @@ class SequenceLogger:
       self.socket.bind("tcp://*:5556")
       self.log = log
 
+   def format_data(self, source, target, payload):
+
+      if payload:
+         
+         if isinstance(payload, basestring):
+            data_string = '%s ->> %s: %s' % (source, target, payload)
+         else:
+            data_string = '%s ->> %s: %s|url:http://www.google.se' % (source, target, 'DATA_STRUCT')
+            
+
+      else:
+         data_string = '%s ->> %s' % (source, target)
+
+      return data_string
+
    def start(self):
       while True:
-         received_string = self.socket.recv_string()
-         print("Received string: " + received_string)
-         if "stop logging" in received_string:
-            self.log.append(received_string)
-            print("shutting down")
-            break
-         else:
-            self.log.append(received_string)
+         received_data = json.loads(self.socket.recv_string())
+         print(received_data)
+         received_data_as_string = self.format_data(*received_data) 
+         print("Received string: " + received_data_as_string)
+         self.log.append(received_data_as_string)
 
    def get_sequence_diagram(self):
       return "\n".join(["sequenceDiagram"] + ["\t" + log_item for log_item in self.log])
