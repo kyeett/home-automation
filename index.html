@@ -17,16 +17,38 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
   crossorigin="anonymous"></script> 
   <script>
       mermaidAPI.initialize({
-          startOnLoad:false
+          startOnLoad:false,
+          logLevel: 1
       });
 
       sequence = [
-      '  Earth Station ->> Mars Station: Hello Space!\n',
-      '  Mars Station ->> Earth Station: Hello Earth\n',
+      '  Earth Station ->> Mars Station: Hello Space! |url:http://www.google.se\n',
+      '  Mars Station ->> Earth Station: Hello Earth! |url:http://stackoverflow.com\n',
       '  Starship Voyager ->> Earth Station: We are at the final fronter\n',
       '  Mars Station ->> Starship Voyager: Where are you guys?\n',
-      '  Starship Voyager ->> Earth Station: We are done, stop logging\n'
+      '  Starship Voyager ->> Earth Station: We are done, stop logging\n',
+      '  A ->> B: We are done, stop logging\n',
+      '  Mars Station ->> Starship Voyager: No really... Stop coyping us\n',
       ]
+
+      function addLinks() {
+
+        $('#graphDiv .messageText').each(function() {
+
+          line_text = $(this).text();
+
+          // Check if hyperlink has is in text
+          if (line_text.indexOf("|url:") >= 0)
+          {
+              parts = line_text.split('|url:');
+              text = parts[0];
+              url = parts[1];
+              $(this).html( '<a href="'+ url +'">'+ text +'</a>');
+
+          }
+
+        });
+      }
 
       function updateGraph(i) {
             
@@ -38,8 +60,10 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
             graphDefinition = "sequenceDiagram\n" + sequence.slice(0,i).join("");
 
-            console.log(graphDefinition);
             var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+
+            // Add hyperlinks to text
+            addLinks();
 
 
             setTimeout(function() {
