@@ -47,25 +47,28 @@ class SpaceStation(Stub):
       print("Sending from %s to %s" % (self.name, target.name))
 
 
-# Create units
-space_station_1 = SpaceStation(name='Earth Station')
-space_station_2 = SpaceStation(name='Mars Station')
-space_ship_v = SpaceShip(name='Starship Voyager')
-	
-# Start signaling
-while True:
+if __name__ == '__main__':
+   
 
-	msg = random.choice(['Hello Space!', 'Hello Earth', 'Where are you guys?', 'We are at the final fronter', 'We are done, stop!', 'No can do'])
+   # Create units
+   space_station_1 = SpaceStation(name='Earth Station')
+   space_station_2 = SpaceStation(name='Mars Station')
+   space_ship_v = SpaceShip(name='Starship Voyager')
+   	
+   # Start signaling
+   while True:
 
-	source = random.choice([space_station_1, space_station_2, space_ship_v])
-	target = random.choice([space_station_1, space_station_2, space_ship_v])
+   	msg = random.choice(['Hello Space!', 'Hello Earth', 'Where are you guys?', 'We are at the final fronter', 'We are done, stop!', 'No can do'])
 
-	source.send_to_station(target, msg)
-	time.sleep(1)
+   	source = random.choice([space_station_1, space_station_2, space_ship_v])
+   	target = random.choice([space_station_1, space_station_2, space_ship_v])
 
-#space_station_1.send_to_station(space_station_2, 'Hello Space!')
-#space_station_2.send_to_station(space_station_1, 'Hello Earth')
-#space_station_2.send_to_station(space_ship_v, 'Where are you guys?')
-#space_ship_v.send_to_station(space_station_1, )
-#space_ship_v.send_to_station(space_station_1, 'We are done, stop!')
-#space_station_2.send_to_station(space_ship_v, )
+   	source.send_to_station(target, msg)
+   	time.sleep(1)
+
+   #space_station_1.send_to_station(space_station_2, 'Hello Space!')
+   #space_station_2.send_to_station(space_station_1, 'Hello Earth')
+   #space_station_2.send_to_station(space_ship_v, 'Where are you guys?')
+   #space_ship_v.send_to_station(space_station_1, )
+   #space_ship_v.send_to_station(space_station_1, 'We are done, stop!')
+   #space_station_2.send_to_station(space_ship_v, )
