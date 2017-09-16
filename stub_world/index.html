@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="
+https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
+</head>
+<body>
+  <div class="graphDiv">
+
+
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script> 
+  <script>
+      mermaidAPI.initialize({
+          startOnLoad:false
+      });
+
+      sequence = [
+      '  Earth Station ->> Mars Station: Hello Space!\n',
+      '  Mars Station ->> Earth Station: Hello Earth\n',
+      '  Starship Voyager ->> Earth Station: We are at the final fronter\n',
+      '  Mars Station ->> Starship Voyager: Where are you guys?\n',
+      '  Starship Voyager ->> Earth Station: We are done, stop logging\n'
+      ]
+
+      function updateGraph(i) {
+            
+            var element = document.querySelector("#graphDiv");
+
+            var insertSvg = function(svgCode, bindFunctions){
+                element.innerHTML = svgCode;
+            };
+
+            graphDefinition = "sequenceDiagram\n" + sequence.slice(0,i).join("");
+
+            console.log(graphDefinition);
+            var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+
+
+            setTimeout(function() {
+                updateGraph(i+1)
+            }, 1000);
+        
+      }
+
+      updateGraph(1);
+
+  </script>
+
+</body>
+</html>
