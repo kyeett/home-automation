@@ -4,7 +4,8 @@
 #
 
 import zmq
-
+import time
+import random
 
 ctx = zmq.Context()
 
@@ -52,9 +53,19 @@ space_station_2 = SpaceStation(name='Mars Station')
 space_ship_v = SpaceShip(name='Starship Voyager')
 	
 # Start signaling
-space_station_1.send_to_station(space_station_2, 'Hello Space!')
-space_station_2.send_to_station(space_station_1, 'Hello Earth')
-space_station_2.send_to_station(space_ship_v, 'Where are you guys?')
-space_ship_v.send_to_station(space_station_1, 'We are at the final fronter')
-space_ship_v.send_to_station(space_station_1, 'We are done, stop!')
-space_station_2.send_to_station(space_ship_v, 'No can do')
+while True:
+
+	msg = random.choice(['Hello Space!', 'Hello Earth', 'Where are you guys?', 'We are at the final fronter', 'We are done, stop!', 'No can do'])
+
+	source = random.choice([space_station_1, space_station_2, space_ship_v])
+	target = random.choice([space_station_1, space_station_2, space_ship_v])
+
+	source.send_to_station(target, msg)
+	time.sleep(1)
+
+#space_station_1.send_to_station(space_station_2, 'Hello Space!')
+#space_station_2.send_to_station(space_station_1, 'Hello Earth')
+#space_station_2.send_to_station(space_ship_v, 'Where are you guys?')
+#space_ship_v.send_to_station(space_station_1, )
+#space_ship_v.send_to_station(space_station_1, 'We are done, stop!')
+#space_station_2.send_to_station(space_ship_v, )
