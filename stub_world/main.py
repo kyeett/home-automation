@@ -1,43 +1,50 @@
-# 
+#
 # A framework for messaging between programs
 # 	and visualising the signaling
 #
 
+import zmq
 
-log = []
+
+ctx = zmq.Context()
+
 
 class Stub:
 
-	def __init__(self, name):
-		self.name = name
+   def __init__(self, name):
+      self.name = name
+      self.socket = ctx.socket(zmq.PUSH)
+      self.socket.connect("tcp://localhost:5556")
 
-	def log_signaling(self, source, target, payload=None):
+   def log_signaling(self, source, target, payload=None):
 
-		if payload:
-			log.append('"%s" --> "%s" [label = "%s"]' % (source, target, payload))
-		else:
-			log.append('"%s" --> "%s"' % (source, target))
+      if payload:
+         log_entry = '%s ->> %s: %s' % (
+             source, target, payload)
+      else:
+         log_entry = '%s ->> %s' % (source, target)
 
-		print(source, target, payload)
+      print(source, target, payload)
+      self.socket.send_string(log_entry)
 
 
 class SpaceShip(Stub):
 
-	def send_to_station(self, target, msg):
-		self.log_signaling(source=self.name, target=target.name, payload=msg)
+   def send_to_station(self, target, msg):
+      self.log_signaling(source=self.name, target=target.name, payload=msg)
 
-		# Send signal
-		print("Sending from %s to %s" % (self.name, target.name))
+      # Send signal
+      print("Sending from %s to %s" % (self.name, target.name))
 
 
 class SpaceStation(Stub):
 
+   def send_to_station(self, target, msg):
+      self.log_signaling(source=self.name, target=target.name, payload=msg)
 
-	def send_to_station(self, target, msg):
-		self.log_signaling(source=self.name, target=target.name, payload=msg)
+      # Send signal
+      print("Sending from %s to %s" % (self.name, target.name))
 
-		# Send signal
-		print("Sending from %s to %s" % (self.name, target.name))
 
 # Create units
 space_station_1 = SpaceStation(name='Earth Station')
@@ -49,10 +56,4 @@ space_station_1.send_to_station(space_station_2, 'Hello Space!')
 space_station_2.send_to_station(space_station_1, 'Hello Earth')
 space_station_2.send_to_station(space_ship_v, 'Where are you guys?')
 space_ship_v.send_to_station(space_station_1, 'We are at the final fronter')
-
-
-print('{')
-for line in log:
-	print("\t" + line + ";")
-print('}')
-
+space_ship_v.send_to_station(space_station_1, 'We are done, stop logging')
