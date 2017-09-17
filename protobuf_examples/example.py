@@ -15,11 +15,13 @@ phone.number = "555-4321"
 phone.type = basic.Person.HOME
 
 # Serialize protobuf
-serialized = person.SerializeToString()
+serialized_object = person.SerializeToString()
 
-# Dummy send :-)
-pass
+if __name__ == '__main__':
+   
+   # Dummy send :-)
+   pass
 
-# Deserialize protobuf 
-obj = proto_decoder.deserialize_string(serialized)
-print(obj)
+   # Deserialize protobuf 
+   obj = proto_decoder.deserialize_string(serialized_object)
+   print(obj)

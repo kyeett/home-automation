@@ -4,7 +4,8 @@ from threading import Thread
 from flask import Flask, render_template
 log = []
 app = Flask(__name__)
-logger = SequenceLogger(log)
+import protobuf_examples.basic_pb2 as basic
+logger = SequenceLogger(log, [basic])
 
 
 

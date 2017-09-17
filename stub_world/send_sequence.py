@@ -7,6 +7,9 @@ import zmq
 import time
 import random
 import json
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 ctx = zmq.Context()
 
@@ -16,11 +19,17 @@ class Stub:
    def __init__(self, name):
       self.name = name
       self.socket = ctx.socket(zmq.PUSH)
+      timeout_milliseconds = 200
+      self.socket.setsockopt(zmq.LINGER, timeout_milliseconds)
       self.socket.connect("tcp://localhost:5556")
+
 
    def log_signaling(self, source, target, payload=None):
       log_entry = (source, target, payload)
-      self.socket.send_string(json.dumps(log_entry))
+      #print(type(source),type(target),type(payload), type(payload.decode('utf-8')))
+      log_entry_string = "|".join(log_entry)
+      self.socket.send(log_entry_string)
+#      self.socket.send_string( log_entry_string, zmq.NOBLOCK, encoding='latin-1')
 
 
 class SpaceShip(Stub):

@@ -9,6 +9,9 @@ import random
 import sys
 
 from send_sequence import Stub
+from protobuf_examples.protobuf_decoder import ProtobufDecoder
+import protobuf_examples.example
+import json
 
 # Smallest viable stub
 class EmptyStub(Stub): 
@@ -30,7 +33,14 @@ except IndexError as e:
 try:
    msg = sys.argv[3]
 except IndexError as e:
-   msg = {'key':'value'}
+
+   msg = random.choice([
+            #json.dumps({'key':'value'}),                 # Basic dict
+            protobuf_examples.example.serialized_object  # Basic protobuf signal 
+      ])
+
+   print(protobuf_examples.example.serialized_object)
+   print(msg, type(msg))
 
 
 a_stub = EmptyStub(name=a)

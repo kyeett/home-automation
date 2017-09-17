@@ -6,6 +6,7 @@ class ProtobufDecoder:
 
     def __init__(self, protobuf_modules):
         self.protobuf_classes = self.get_protobuf_classes(protobuf_modules)
+        print("Protobuf classes found: %s" % self.protobuf_classes)
     
     # Tries to decode serialized message from known protobuf classes
     def deserialize_string(self, serialized_obj):
