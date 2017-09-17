@@ -35,7 +35,7 @@ try:
 except IndexError as e:
 
    msg = random.choice([
-            #json.dumps({'key':'value'}),                 # Basic dict
+            json.dumps({'key':'value', 'keyvalue':'pair'}, indent=4),                 # Basic dict
             protobuf_examples.example.serialized_object  # Basic protobuf signal 
       ])
 
@@ -47,5 +47,5 @@ a_stub = EmptyStub(name=a)
 b_stub = EmptyStub(name=b)
 
 
-a_stub.send_to(b_stub,msg)
+a_stub.send_to(b_stub, msg)
 

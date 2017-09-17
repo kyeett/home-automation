@@ -7,7 +7,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 </head>
 <body>
   <div class="graphDiv" style="float: left"></div>
-  <div id="dataDiv" style="width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right"></div>
+  <pre id="dataDiv" style="width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -62,10 +62,14 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
               // Ensure on click // TODO: is this really working?
               $( "a" ).on( "click", function( event ) {
-                
-                console.log($(this).text());
-                console.log($(this).prop('href'));
-                $('#dataDiv').text($(this).prop('href').baseVal);
+
+                url = $(this).prop('href').baseVal
+                $.get(url, function(data) {
+
+                    //Replace linebreaks with html line breaks
+                    //data = data.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    $('#dataDiv').html(data);
+                });
 
                 event.preventDefault();
                 return false;

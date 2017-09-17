@@ -8,8 +8,7 @@ import time
 import random
 import json
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+import protobuf_examples.example
 
 ctx = zmq.Context()
 
@@ -61,7 +60,7 @@ if __name__ == '__main__':
    # Start signaling
    while True:
 
-   	msg = random.choice(['Hello Space!', 'Hello Earth', 'Where are you guys?', 'We are at the final fronter', 'We are done, stop!', 'No can do'])
+   	msg = random.choice(['Hello Space!', 'Hello Earth', 'Where are you guys?', 'We are at the final fronter', 'We are done, stop!', 'No can do', protobuf_examples.example.serialized_object])
 
    	source = random.choice([space_station_1, space_station_2, space_ship_v])
    	target = random.choice([space_station_1, space_station_2, space_ship_v])
