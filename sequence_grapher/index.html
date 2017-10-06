@@ -11,7 +11,8 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
   <div class="graphDiv" style="float: left"></div>
 
   <div style="background-color: #E0E0E0; margin: 20px; padding: 20px 30px 10px 30px;">
-    <input id="ex16b" type="text" style="width: 700px"/><br/>
+    <input id="ex16b" type="text" style="width: 800px"/>
+    <input type="button" id="update" value="Update" style="float:right">
   </div>
   <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
   <script
@@ -39,20 +40,18 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
       now_15m.setMinutes(now_15m.getMinutes() - 15);
       now_1h.setHours(now_1h.getHours() - 1);
 
-      console.log(now);
+/*      console.log(now);
       console.log(now_5m.getTime());
       console.log(now_15m.getTime());
 
       now_2 = new Date();
-      console.log(now_2.toISOString());
+      console.log(now_2.toISOString());*/
       // Reference: http://seiyria.com/bootstrap-slider/
       $("#ex16b").slider({
                         ticks:            [0,   100,    200,  300,  now_15m.getTime(),      now_5m.getTime(),      now],
-                        ticks_positions:  [0,   30,     55,   70,   85,       92,      100],
+                        ticks_positions:  [0,   10,     40,   65,   80,       90,      100],
                         ticks_labels:     ['-', '24h',  '6h', '1h', '15m', '5m',  'NOW'],
   formatter: function(value) {
-    console.log("yo");
-    console.log(1394104654000);
 
     // Seems to fire with empty values sometimes, ignore these
     if(value[0])
@@ -87,14 +86,20 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
 
 
-      $(document).ready(function() {
+      function updateGraph()
+      {
+        date_range = $('#ex16b').slider('getValue');
+        console.log(date_range[0]);
+        from_date = new Date(date_range[0]);
+        from_date_string = from_date.toISOString();
+
         data = {
-            "from" : 0, "size" : 2,
+            "from" : 0, "size" : 200,
             sort: { "@timestamp": { "order": "desc" }},
             "query": {
                 "range" : {
                     "@timestamp" : {
-                        "gte": "2017-10-06T20:04:13.496Z",
+                        "gte": from_date_string,
                         "lte": "now",
                         "time_zone": "+01:00"
                     }
@@ -123,6 +128,8 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
               graphDefinition = "sequenceDiagram\n" + txt;
 
+
+              $('#graphDiv').html('');
               var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
 
               console.log(graphDefinition);
@@ -130,11 +137,17 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
             },
           error: function(jqXHR, textStatus, errorThrown) {console.log("failure");}
         });
+      }
 
 
 
       $(document).ready(function() {
         updateGraph();
+
+        $("#update").click(function() {
+          updateGraph();
+        });
+
       });
 
 /*
@@ -170,7 +183,6 @@ $.ajax({
 
 */
 
-      })
 
   </script>
 
