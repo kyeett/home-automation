@@ -13,6 +13,8 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
   <div style="background-color: #E0E0E0; margin: 20px; padding: 20px 30px 10px 30px;">
     <input id="ex16b" type="text" style="width: 800px"/>
     <input type="button" id="update" value="Update" style="float:right">
+    <label  style="margin-left: 50px">Max events</label>
+    <input type="text" id="max_events" value="10">
   </div>
   <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
   <script
@@ -88,19 +90,38 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
       function updateGraph()
       {
+        console.log("Updating graph");
+        max_events = parseInt($('#max_events').val());
+
         date_range = $('#ex16b').slider('getValue');
         console.log(date_range[0]);
+
         from_date = new Date(date_range[0]);
         from_date_string = from_date.toISOString();
 
+        to_date = new Date(date_range[1]);
+        to_date_string = to_date.toISOString();
+
+
+        // Check if to_date = max, if so use NOW instead of to-date
+        max = $('#ex16b').slider('getAttribute','max');
+        if(to_date.getTime() == max)
+        {
+          to_date_string = "now";
+          $("#now_label").css("font-weight", "bold");
+        }
+        else {
+          $("#now_label").css("font-weight", "normal");
+        }
+
         data = {
-            "from" : 0, "size" : 200,
+            "from" : 0, "size" : max_events,
             sort: { "@timestamp": { "order": "desc" }},
             "query": {
                 "range" : {
                     "@timestamp" : {
                         "gte": from_date_string,
-                        "lte": "now",
+                        "lte": to_date_string,
                         "time_zone": "+01:00"
                     }
                 }
@@ -137,52 +158,29 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
             },
           error: function(jqXHR, textStatus, errorThrown) {console.log("failure");}
         });
+
+        setTimeout(function() {
+            updateGraph()
+        }, 1000);
+
       }
 
 
 
       $(document).ready(function() {
+
+        $("div.slider-tick-label:contains('NOW')").attr("id","now_label");
+
         updateGraph();
+
+
+
 
         $("#update").click(function() {
           updateGraph();
         });
 
       });
-
-/*
-          $.get('http://192.168.0.11:9200/_cat/indices?v', function(data) {
-            console.log(data);
-          })
-var query = {
-    query: {
-        filtered: {
-            filter: {
-                term: { "to": "UEF" }
-            }
-        }
-    }
-};
-
-$.ajax({
-    url: "http://192.168.0.240:9200/logstash-/_search?pretty=true",
-    type: 'GET',
-    dataType: 'json',
-    success: function(data) {
-        console.log('Success');
-        $(data.hits.hits).each(function(index, hit) {
-            console.log(hit._source.items);
-        });
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus);
-        console.log(errorThrown);
-    },
-    data: query
-});
-
-*/
-
 
   </script>
 
