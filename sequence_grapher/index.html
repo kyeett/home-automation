@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="
+https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/css/bootstrap-slider.css" />
+</head>
+<body>
+  <div class="graphDiv" style="float: left"></div>
+
+  <div style="background-color: #E0E0E0; margin: 20px; padding: 20px 30px 10px 30px;">
+    <input id="ex16b" type="text" style="width: 700px"/><br/>
+  </div>
+  <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/bootstrap-slider.min.js"></script>
+  <script>
+
+
+      now = Date.now();
+      now_5m = new Date();
+      now_15m = new Date();
+      now_1h = new Date();
+
+      now_5m.setMinutes(now_5m.getMinutes() - 5);
+      now_15m.setMinutes(now_15m.getMinutes() - 15);
+      now_1h.setHours(now_1h.getHours() - 1);
+
+      console.log(now);
+      console.log(now_5m.getTime());
+      console.log(now_15m.getTime());
+
+      now_2 = new Date();
+      console.log(now_2.toISOString());
+      // Reference: http://seiyria.com/bootstrap-slider/
+      $("#ex16b").slider({
+                        ticks:            [0,   100,    200,  300,  now_15m.getTime(),      now_5m.getTime(),      now],
+                        ticks_positions:  [0,   30,     55,   70,   85,       92,      100],
+                        ticks_labels:     ['-', '24h',  '6h', '1h', '15m', '5m',  'NOW'],
+  formatter: function(value) {
+    console.log("yo");
+    console.log(1394104654000);
+
+    // Seems to fire with empty values sometimes, ignore these
+    if(value[0])
+    {
+      date_1 = new Date(value[0]);
+      date_2 = new Date(value[1]);
+      return 'Current value: ' + date_1.toISOString() + "  -->  " + date_2.toISOString();// + date_1.toISOString();
+    }
+    else
+    {
+      return ""
+    }
+  },
+                        value: [now_15m.getTime(), now]});
+
+      mermaidAPI.initialize({
+          startOnLoad:false,
+      });
+
+
+      var element = document.querySelector("#graphDiv");
+
+      var insertSvg = function(svgCode, bindFunctions){
+                  element.innerHTML = svgCode;
+              };
+
+
+      function remove_invalid_characters(str)
+      {
+        return str.replace(/-/g, '_');
+      }
+
+
+
+      $(document).ready(function() {
+        data = {
+            "from" : 0, "size" : 2,
+            sort: { "@timestamp": { "order": "desc" }},
+            "query": {
+                "range" : {
+                    "@timestamp" : {
+                        "gte": "2017-10-06T20:04:13.496Z",
+                        "lte": "now",
+                        "time_zone": "+01:00"
+                    }
+                }
+            }
+            };
+        $.ajax( {
+          url:'http://192.168.0.11:9200/logstash-*/_search?pretty=true',
+          type: 'POST',
+            //contentType: 'application/json; charset=UTF-8',
+            crossDomain: true,
+            dataType: 'json',
+            data: JSON.stringify(data),
+          success:function(data, textStatus, jqXHR) {
+
+              txt = ""
+              $.each(data.hits.hits, function(index, hit_data) {
+
+                //Earth Station ->> Mars Station: Hello Space!
+                txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
+                       remove_invalid_characters(hit_data._source['to']) + ":" +
+                       remove_invalid_characters(hit_data._source['msg']) + "\n";
+
+                console.log(hit_data._source);
+              });
+
+              graphDefinition = "sequenceDiagram\n" + txt;
+
+              var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+
+              console.log(graphDefinition);
+
+            },
+          error: function(jqXHR, textStatus, errorThrown) {console.log("failure");}
+        });
+
+
+
+      $(document).ready(function() {
+        updateGraph();
+      });
+
+/*
+          $.get('http://192.168.0.11:9200/_cat/indices?v', function(data) {
+            console.log(data);
+          })
+var query = {
+    query: {
+        filtered: {
+            filter: {
+                term: { "to": "UEF" }
+            }
+        }
+    }
+};
+
+$.ajax({
+    url: "http://192.168.0.240:9200/logstash-/_search?pretty=true",
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        console.log('Success');
+        $(data.hits.hits).each(function(index, hit) {
+            console.log(hit._source.items);
+        });
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus);
+        console.log(errorThrown);
+    },
+    data: query
+});
+
+*/
+
+      })
+
+  </script>
+
+</body>
+<style type="text/css">
+
+  .actor {
+
+    fill: #cde498;
+    stroke: #13540c;
+  }
+
+</style>
+</html>
