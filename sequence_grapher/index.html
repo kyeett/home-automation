@@ -2,34 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="
-https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
+
+<!-- JQUERY -->
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+<!-- JQUERY UI -->
+<!--<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>-->
+
+<!-- BOOTSTRAP -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<!-- DATEPICKER PLUGIN -->
+<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.min.css" />
+-->
+<!-- MERMAID -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
+
+<!-- SLIDER -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/bootstrap-slider.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/css/bootstrap-slider.css" />
+
+<!-- DATEPICKER -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
+
+<!-- TIMEPICKER
+<script src="https://cdn.jsdelivr.net/npm/timepicker@1.11.12/jquery.timepicker.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/timepicker@1.11.12/jquery.timepicker.min.css" />
+-->
+<!-- TIMEPICKER 2 -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+
+
+<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/i18n/jquery-ui-timepicker-sv.js"></script>-->
+
 </head>
 <body>
   <div class="graphDiv" style="float: left"></div>
 
   <div style="background-color: #E0E0E0; margin: 20px; padding: 20px 30px 10px 30px;">
+<p id="jqueryExample">
+    <input type="text" class="date start" />
+    <input type="text" class="timepicker from" /> to
+
+    <input type="text" class="date end" />
+
+    <input type="text" class="timepicker to" />
+
+    <button type="button" class="btn" id="now_button">NOW</button>
+
+</p>
+<br>
+
+    <br>
+
     <input id="ex16b" type="text" style="width: 800px"/>
     <input type="button" id="update" value="Update" style="float:right">
     <label  style="margin-left: 50px">Max events</label>
     <input type="text" id="max_events" value="10">
   </div>
   <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/bootstrap-slider.min.js"></script>
   <script>
 
 
@@ -42,32 +85,27 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
       now_15m.setMinutes(now_15m.getMinutes() - 15);
       now_1h.setHours(now_1h.getHours() - 1);
 
-/*      console.log(now);
-      console.log(now_5m.getTime());
-      console.log(now_15m.getTime());
-
-      now_2 = new Date();
-      console.log(now_2.toISOString());*/
       // Reference: http://seiyria.com/bootstrap-slider/
-      $("#ex16b").slider({
+      $("#ex16b").bootstrapSlider({
                         ticks:            [0,   100,    200,  300,  now_15m.getTime(),      now_5m.getTime(),      now],
                         ticks_positions:  [0,   10,     40,   65,   80,       90,      100],
                         ticks_labels:     ['-', '24h',  '6h', '1h', '15m', '5m',  'NOW'],
-  formatter: function(value) {
+                        value: [now_15m.getTime(), now],
+                        formatter: function(value) {
 
-    // Seems to fire with empty values sometimes, ignore these
-    if(value[0])
-    {
-      date_1 = new Date(value[0]);
-      date_2 = new Date(value[1]);
-      return 'Current value: ' + date_1.toISOString() + "  -->  " + date_2.toISOString();// + date_1.toISOString();
-    }
-    else
-    {
-      return ""
-    }
-  },
-                        value: [now_15m.getTime(), now]});
+                          // Seems to fire with empty values sometimes, ignore these
+                          if(value[0])
+                          {
+                            date_1 = new Date(value[0]);
+                            date_2 = new Date(value[1]);
+                            return 'Current value: ' + date_1.toISOString() + "  -->  " + date_2.toISOString();// + date_1.toISOString();
+                          }
+                          else
+                          {
+                            return ""
+                          }
+                        },
+                      });
 
       mermaidAPI.initialize({
           startOnLoad:false,
@@ -93,8 +131,8 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
         console.log("Updating graph");
         max_events = parseInt($('#max_events').val());
 
-        date_range = $('#ex16b').slider('getValue');
-        console.log(date_range[0]);
+        date_range = $('#ex16b').bootstrapSlider('getValue');
+        //console.log(date_range[0]);
 
         from_date = new Date(date_range[0]);
         from_date_string = from_date.toISOString();
@@ -104,7 +142,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
 
         // Check if to_date = max, if so use NOW instead of to-date
-        max = $('#ex16b').slider('getAttribute','max');
+        max = $('#ex16b').bootstrapSlider('getAttribute','max');
         if(to_date.getTime() == max)
         {
           to_date_string = "now";
@@ -144,7 +182,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
                        remove_invalid_characters(hit_data._source['to']) + ":" +
                        remove_invalid_characters(hit_data._source['msg']) + "\n";
 
-                console.log(hit_data._source);
+                //console.log(hit_data._source);
               });
 
               graphDefinition = "sequenceDiagram\n" + txt;
@@ -153,7 +191,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
               $('#graphDiv').html('');
               var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
 
-              console.log(graphDefinition);
+              //console.log(graphDefinition);
 
             },
           error: function(jqXHR, textStatus, errorThrown) {console.log("failure");}
@@ -168,6 +206,57 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 
 
       $(document).ready(function() {
+        date_now = new Date();
+        date_now.setSeconds(0);
+
+        date_15_min_ago = new Date(date_now.getTime());
+        date_15_min_ago.setMinutes(date_15_min_ago.getMinutes() - 15);
+
+
+
+        // Initialize time pickers, from and to. Reference: http://timepicker.co/
+        $('.timepicker.from').timepicker({
+            timeFormat: 'HH:mm:ss',
+            interval: 15,
+            minTime: '0',
+            defaultTime:  date_15_min_ago.toTimeString().split(' ')[0],
+            dynamic: false,
+            dropdown: true,
+            scrollbar: true
+        });
+
+        $('.timepicker.to').timepicker({
+            timeFormat: 'HH:mm:ss',
+            interval: 15,
+            minTime: '0',
+            defaultTime:  date_now.toTimeString().split(' ')[0],
+            dynamic: true,
+            dropdown: true,
+            scrollbar: true
+        });
+        /*
+            // initialize input widgets first
+          $('#jqueryExample .time').timepicker({
+              'showDuration': false,
+              'timeFormat': 'h:i A',
+              'scrollDefault': 'now',
+              'step': 15,
+              'defaultTime:': '10:45 PM'
+            });
+
+          $('#jqueryExample .date').datepicker({
+              'format': 'm/d/yyyy',
+              'autoclose': true
+          });
+        */
+        /*$('#slider_example_2').timepicker({
+          timeFormat: 'HH:mm:ss',
+          stepHour: 2,
+          stepMinute: 10,
+          stepSecond: 10
+        });*/
+
+
 
         $("div.slider-tick-label:contains('NOW')").attr("id","now_label");
 
@@ -180,6 +269,32 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
           updateGraph();
         });
 
+
+    $('#now_button').click( function() {
+
+        console.log("log");
+
+          //$("#").timepicker('getTime');
+          $("#now_button").toggleClass("btn-primary");
+
+
+          if($("#now_button").hasClass('btn-primary')) {
+              $(".timepicker.to").prop('disabled', true);
+              $(".timepicker.to").val('NOW');
+          }
+          else {
+              $(".timepicker.to").prop('disabled', false);
+              $(".timepicker.to").val(new Date().toTimeString().split(' ')[0]);
+          }
+          /*console.log($('#jqueryExample').timepicker('getTime'));
+          $('#jqueryExample').timepicker('setTime', new Date());
+          console.log($('#jqueryExample>.time.end').val());*/
+
+    });
+
+
+
+
       });
 
   </script>
@@ -187,10 +302,18 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
 </body>
 <style type="text/css">
 
+  .timepicker:disabled {
+    background: #dddddd;
+  }
+
   .actor {
 
     fill: #cde498;
     stroke: #13540c;
+  }
+
+  #now_button.hej {
+    border:2px solid blue;
   }
 
 </style>
