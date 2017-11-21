@@ -37,8 +37,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/timepicker@1.11.12/jquery.timepicker.min.css" />
 -->
 <!-- TIMEPICKER 2 -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+<script src="jquery.timepicker.js"></script>
+<link rel="stylesheet" href="jquery.timepicker.css">
 
 
 <!--
@@ -51,61 +51,25 @@
 
   <div style="background-color: #E0E0E0; margin: 20px; padding: 20px 30px 10px 30px;">
 <p id="jqueryExample">
-    <input type="text" class="date start" />
+    <input type="text" class="datepicker from" />
     <input type="text" class="timepicker from" /> to
 
-    <input type="text" class="date end" />
-
+    <input type="text" class="datepicker to" />
     <input type="text" class="timepicker to" />
 
     <button type="button" class="btn" id="now_button">NOW</button>
 
-</p>
 <br>
-
-    <br>
-
-    <input id="ex16b" type="text" style="width: 800px"/>
-    <input type="button" id="update" value="Update" style="float:right">
     <label  style="margin-left: 50px">Max events</label>
-    <input type="text" id="max_events" value="10">
-  </div>
+    <input type="text" id="max_events" value="100">
+
+</p>
+
   <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
 
 
   <script>
 
-
-      now = Date.now();
-      now_5m = new Date();
-      now_15m = new Date();
-      now_1h = new Date();
-
-      now_5m.setMinutes(now_5m.getMinutes() - 5);
-      now_15m.setMinutes(now_15m.getMinutes() - 15);
-      now_1h.setHours(now_1h.getHours() - 1);
-
-      // Reference: http://seiyria.com/bootstrap-slider/
-      $("#ex16b").bootstrapSlider({
-                        ticks:            [0,   100,    200,  300,  now_15m.getTime(),      now_5m.getTime(),      now],
-                        ticks_positions:  [0,   10,     40,   65,   80,       90,      100],
-                        ticks_labels:     ['-', '24h',  '6h', '1h', '15m', '5m',  'NOW'],
-                        value: [now_15m.getTime(), now],
-                        formatter: function(value) {
-
-                          // Seems to fire with empty values sometimes, ignore these
-                          if(value[0])
-                          {
-                            date_1 = new Date(value[0]);
-                            date_2 = new Date(value[1]);
-                            return 'Current value: ' + date_1.toISOString() + "  -->  " + date_2.toISOString();// + date_1.toISOString();
-                          }
-                          else
-                          {
-                            return ""
-                          }
-                        },
-                      });
 
       mermaidAPI.initialize({
           startOnLoad:false,
@@ -113,15 +77,33 @@
 
 
       var element = document.querySelector("#graphDiv");
-
-      var insertSvg = function(svgCode, bindFunctions){
-                  element.innerHTML = svgCode;
-              };
+      var insertSvg = function(svgCode, bindFunctions){  element.innerHTML = svgCode; };
 
 
       function remove_invalid_characters(str)
       {
         return str.replace(/-/g, '_');
+      }
+
+      // Takes a datetime object and a stirng on the format 10:22:11 or 11:00
+      function update_date_with_timestring(date, timestring)
+      {
+          timestring_split = timestring.split(":");
+
+          if(timestring_split.length > 0 && parseInt(timestring_split[0]) != NaN)
+          {
+            date.setHours(parseInt(timestring_split[0]));
+          }
+
+          if(timestring_split.length > 1 && parseInt(timestring_split[1]) != NaN)
+          {
+            date.setMinutes(parseInt(timestring_split[1]));
+          }
+
+          if(timestring_split.length > 2 && parseInt(timestring_split[2]) != NaN)
+          {
+            date.setSeconds(parseInt(timestring_split[2]));
+          }
       }
 
 
@@ -131,30 +113,41 @@
         console.log("Updating graph");
         max_events = parseInt($('#max_events').val());
 
-        date_range = $('#ex16b').bootstrapSlider('getValue');
-        //console.log(date_range[0]);
 
-        from_date = new Date(date_range[0]);
-        from_date_string = from_date.toISOString();
+        // Get the from-time
+        from_date = $(".datepicker.from").datepicker('getDate');
+        from_time_string = $(".timepicker.from").val();
+        update_date_with_timestring(from_date, from_time_string);
 
-        to_date = new Date(date_range[1]);
-        to_date_string = to_date.toISOString();
+        // Get time from the timepicker
+        to_time_string = $(".timepicker.to").val();
 
-
-        // Check if to_date = max, if so use NOW instead of to-date
-        max = $('#ex16b').bootstrapSlider('getAttribute','max');
-        if(to_date.getTime() == max)
+        // Get the to-date, either NOW or the selected value
+        if(to_time_string == 'NOW')
         {
-          to_date_string = "now";
-          $("#now_label").css("font-weight", "bold");
+          //Set time to now
+          to_date = new Date();
         }
         else {
-          $("#now_label").css("font-weight", "normal");
+
+          // Get date from datepicker
+          to_date = $(".datepicker.to").datepicker('getDate');
+
+          //Update the datepicker.to with time from TIMEPICKER
+          update_date_with_timestring(to_date, to_time_string);
         }
+
+        // Turn into strings
+        to_date_string = to_date.toISOString();
+        from_date_string = from_date.toISOString();
+
+
+        console.log(from_date_string);
+        console.log(to_date_string);
 
         data = {
             "from" : 0, "size" : max_events,
-            sort: { "@timestamp": { "order": "desc" }},
+            sort: { "@timestamp": { "order": "asc" }},
             "query": {
                 "range" : {
                     "@timestamp" : {
@@ -165,10 +158,11 @@
                 }
             }
             };
+        url = 'http://192.168.0.19';
         $.ajax( {
-          url:'http://192.168.0.11:9200/logstash-*/_search?pretty=true',
+          url: url+':9200/logstash-*/_search?pretty=true',
           type: 'POST',
-            //contentType: 'application/json; charset=UTF-8',
+            contentType: 'application/json; charset=UTF-8',
             crossDomain: true,
             dataType: 'json',
             data: JSON.stringify(data),
@@ -234,36 +228,17 @@
             dropdown: true,
             scrollbar: true
         });
-        /*
-            // initialize input widgets first
-          $('#jqueryExample .time').timepicker({
-              'showDuration': false,
-              'timeFormat': 'h:i A',
-              'scrollDefault': 'now',
-              'step': 15,
-              'defaultTime:': '10:45 PM'
-            });
 
-          $('#jqueryExample .date').datepicker({
-              'format': 'm/d/yyyy',
-              'autoclose': true
+        $('.datepicker').datepicker({
+              'autoclose': true,
+              changeMonth: true,
+              changeYear: true
           });
-        */
-        /*$('#slider_example_2').timepicker({
-          timeFormat: 'HH:mm:ss',
-          stepHour: 2,
-          stepMinute: 10,
-          stepSecond: 10
-        });*/
 
-
-
-        $("div.slider-tick-label:contains('NOW')").attr("id","now_label");
+        $('.datepicker.from').datepicker("setDate", date_15_min_ago );
+        $('.datepicker.to').datepicker("setDate", date_now );
 
         updateGraph();
-
-
-
 
         $("#update").click(function() {
           updateGraph();
@@ -281,14 +256,15 @@
           if($("#now_button").hasClass('btn-primary')) {
               $(".timepicker.to").prop('disabled', true);
               $(".timepicker.to").val('NOW');
+
+              $(".datepicker.to").prop('disabled', true);
           }
           else {
               $(".timepicker.to").prop('disabled', false);
               $(".timepicker.to").val(new Date().toTimeString().split(' ')[0]);
+
+              $(".datepicker.to").prop('disabled', false);
           }
-          /*console.log($('#jqueryExample').timepicker('getTime'));
-          $('#jqueryExample').timepicker('setTime', new Date());
-          console.log($('#jqueryExample>.time.end').val());*/
 
     });
 
@@ -302,7 +278,7 @@
 </body>
 <style type="text/css">
 
-  .timepicker:disabled {
+  :disabled {
     background: #dddddd;
   }
 
