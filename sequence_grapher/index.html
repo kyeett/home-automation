@@ -141,9 +141,18 @@
         to_date_string = to_date.toISOString();
         from_date_string = from_date.toISOString();
 
-
         console.log(from_date_string);
         console.log(to_date_string);
+
+        // Read test-id from url
+        if(location.search.split('test-id=').length == 2)
+        {
+          var match_filter = location.search.split('test-id=')[1];
+        }
+        else {
+          match_filter = '';
+        }
+
 
         data = {
             "from" : 0, "size" : max_events,
@@ -156,7 +165,7 @@
                         "time_zone": "+01:00"
                     }
                 }
-            }
+              }
             };
         url = 'http://192.168.0.19';
         $.ajax( {
@@ -171,11 +180,13 @@
               txt = ""
               $.each(data.hits.hits, function(index, hit_data) {
 
-                //Earth Station ->> Mars Station: Hello Space!
-                txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
-                       remove_invalid_characters(hit_data._source['to']) + ":" +
-                       remove_invalid_characters(hit_data._source['msg']) + "\n";
-
+                if(match_filter == '' || hit_data._source['test-id'] == match_filter)
+                {
+                                //Earth Station ->> Mars Station: Hello Space!
+                                txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
+                                       remove_invalid_characters(hit_data._source['to']) + ":" +
+                                       remove_invalid_characters(hit_data._source['msg']) + "\n";
+                }
                 //console.log(hit_data._source);
               });
 
