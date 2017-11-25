@@ -63,10 +63,14 @@
     <label  style="margin-left: 50px">Max events</label>
     <input type="text" id="max_events" value="100">
 
+    <label  style="margin-left: 50px">Sort</label>
+    <select id="sort">
+      <option value="desc">Newest at top</option>
+      <option value="asc">Oldest at top</option>
+    </select>
+
+
 </p>
-
-  <pre id="dataDiv" style="visibility: hidden; width:500px; height: 400px; background-color: lightblue; border: 1px solid darkblue; float: right; padding: 20px"></pre>
-
 
   <script>
 
@@ -112,6 +116,7 @@
       {
         console.log("Updating graph");
         max_events = parseInt($('#max_events').val());
+        sort_order = $('#sort').val();
 
 
         // Get the from-time
@@ -147,29 +152,35 @@
         // Read test-id from url
         if(location.search.split('test-id=').length == 2)
         {
-          var match_filter = location.search.split('test-id=')[1];
+          match_filter = location.search.split('test-id=')[1];
         }
         else {
           match_filter = '';
         }
 
 
+        query = {
+                "range" : {
+                            "@timestamp" : {
+                                "gte": from_date_string,
+                                "lte": to_date_string,
+                                "time_zone": "+01:00"
+                            }
+                        }
+              };
+//        query = {"match_all": {}}
+
         data = {
             "from" : 0, "size" : max_events,
-            sort: { "@timestamp": { "order": "asc" }},
-            "query": {
-                "range" : {
-                    "@timestamp" : {
-                        "gte": from_date_string,
-                        "lte": to_date_string,
-                        "time_zone": "+01:00"
-                    }
-                }
-              }
+            sort: { "@timestamp": { "order": sort_order }},
+            "query": query
             };
-        url = 'http://192.168.0.19';
+
+        ip = '192.168.0.10';
+        var url = 'http://'+ ip +':9200/logstash-*/_search?pretty=true';
+
         $.ajax( {
-          url: url+':9200/logstash-*/_search?pretty=true',
+          url: url,
           type: 'POST',
             contentType: 'application/json; charset=UTF-8',
             crossDomain: true,
@@ -297,10 +308,6 @@
 
     fill: #cde498;
     stroke: #13540c;
-  }
-
-  #now_button.hej {
-    border:2px solid blue;
   }
 
 </style>
