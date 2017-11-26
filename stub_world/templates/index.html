@@ -12,7 +12,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script> 
+  crossorigin="anonymous"></script>
   <script>
       mermaidAPI.initialize({
           startOnLoad:false,
@@ -41,7 +41,7 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
       }
 
       function updateGraph() {
-            
+
             $.get('/log', function(data) {
 
               console.log(data);
@@ -79,14 +79,14 @@ https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.0.0/mermaid.css">
                   updateGraph()
               }, 1000);
             })
-        
+
       }
 
       $(document).ready(function() {
 
           updateGraph();
 
-        
+
       })
 
   </script>

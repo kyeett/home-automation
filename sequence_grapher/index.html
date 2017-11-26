@@ -74,6 +74,23 @@
 
   <script>
 
+      function addLinks() {
+
+        $('#graphDiv .messageText').each(function() {
+
+          line_text = $(this).text();
+
+          // Check if hyperlink has is in text
+          if (line_text.indexOf("|url:") >= 0)
+          {
+              parts = line_text.split('|url:');
+              text = parts[0];
+              url = parts[1];
+              $(this).html( '<a href="'+ url +'" style="cursor:hand;">'+ text +'</a>');
+
+          }
+        });
+      }
 
       mermaidAPI.initialize({
           startOnLoad:false,
@@ -181,7 +198,8 @@
             };
 
         ip = '0.0.0.0';
-        var url = 'http://'+ ip +':9200/logstash-*/_search?pretty=true';
+        base_url = 'http://'+ ip +':9200/';
+        url = base_url + 'logstash-*/_search?pretty=true';
 
         $.ajax( {
           url: url,
@@ -195,17 +213,32 @@
               txt = ""
               $.each(data.hits.hits, function(index, hit_data) {
 
+
+                // Add url if document has a payload
+                if("payload" in hit_data._source)
+                {
+                  document_path = hit_data._index + "/" + hit_data._type + "/" + hit_data._id + "/_source";
+                  payload_msg = "|url:" + base_url + document_path + "?pretty&_source_include=payload";
+                }
+                else {
+                  payload_msg = ""
+                }
+
                 txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
                        remove_invalid_characters(hit_data._source['to']) + ":" +
-                       remove_invalid_characters(hit_data._source['msg']) + "\n";
+                       remove_invalid_characters(hit_data._source['msg']) + payload_msg + "\n";
 
               });
+
 
               graphDefinition = "sequenceDiagram\n" + txt;
 
 
               $('#graphDiv').html('');
               var graph = mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+
+              addLinks();
+
 
               //console.log(graphDefinition);
 
@@ -215,10 +248,23 @@
 
         setTimeout(function() {
             updateGraph()
-        }, 500);
+        }, 1000);
 
       }
 
+      // Ensure on click // TODO: is this really working?
+      $( "body" ).on( "click", "a",  function( event ) {
+
+        url = $(this).prop('href').baseVal;
+        $('#dataDiv').html('');
+        $.get(url, function(data) {
+
+            $('#dataDiv').html(data);
+        }, "text");
+
+        event.preventDefault();
+        return false;
+      });
 
 
       $(document).ready(function() {
@@ -298,10 +344,27 @@
   </script>
 
 </body>
+ <pre id="dataDiv" style=""></pre>
 <style type="text/css">
+
+  #dataDiv {
+    visibility: visible;
+     width:300px;
+     background-color: lightblue;
+     border: 1px solid darkblue;
+     padding: 20px;
+     position: fixed;
+     top: -2px;
+     bottom: 0px;
+     right: 0px;
+     height: 100%;
+
+     background-color:rgba(255, 255, 255, 0.7);
+  }
 
   :disabled {
     background: #dddddd;
+
   }
 
   .actor {
