@@ -149,34 +149,38 @@
         console.log(from_date_string);
         console.log(to_date_string);
 
-        // Read test-id from url
-        if(location.search.split('test-id=').length == 2)
-        {
-          match_filter = location.search.split('test-id=')[1];
-        }
-        else {
-          match_filter = '';
-        }
-
-
         query = {
-                "range" : {
+                "bool" : {
+                    "must" : [
+                    { "range" : {
                             "@timestamp" : {
                                 "gte": from_date_string,
                                 "lte": to_date_string,
                                 "time_zone": "+01:00"
                             }
-                        }
-              };
+                          }
+                         }
+                    ]
+                }
+            }
+
+        //Add filter for test-id, if defined
+        if(location.search.split('test-id=').length == 2)
+        {
+          match_filter = location.search.split('test-id=')[1];
+          query["bool"]["must"].push({ "match" : {"test-id" : match_filter} })
+        }
+
 //        query = {"match_all": {}}
 
         data = {
-            "from" : 0, "size" : max_events,
+            "from" : 0,
+            "size" : max_events,
             sort: { "@timestamp": { "order": sort_order }},
             "query": query
             };
 
-        ip = '192.168.0.10';
+        ip = '0.0.0.0';
         var url = 'http://'+ ip +':9200/logstash-*/_search?pretty=true';
 
         $.ajax( {
@@ -191,14 +195,10 @@
               txt = ""
               $.each(data.hits.hits, function(index, hit_data) {
 
-                if(match_filter == '' || hit_data._source['test-id'] == match_filter)
-                {
-                                //Earth Station ->> Mars Station: Hello Space!
-                                txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
-                                       remove_invalid_characters(hit_data._source['to']) + ":" +
-                                       remove_invalid_characters(hit_data._source['msg']) + "\n";
-                }
-                //console.log(hit_data._source);
+                txt += remove_invalid_characters(hit_data._source['from']) + " ->> " +
+                       remove_invalid_characters(hit_data._source['to']) + ":" +
+                       remove_invalid_characters(hit_data._source['msg']) + "\n";
+
               });
 
               graphDefinition = "sequenceDiagram\n" + txt;
@@ -215,7 +215,7 @@
 
         setTimeout(function() {
             updateGraph()
-        }, 1000);
+        }, 500);
 
       }
 
